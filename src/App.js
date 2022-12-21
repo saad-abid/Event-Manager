@@ -1,23 +1,55 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import EventList from "./components/EventList";
+import Modal from "./components/Modal";
+import NewEventForm from "./components/NewEventForm";
+import Title from "./components/Title";
 
 function App() {
+  const [events, setEvents] = useState([]);
+  const [showEvents, setShowEvents] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+  const removeClickHandler = (id) => {
+    setEvents((preEvent) => {
+      return preEvent.filter((event) => {
+        return event.id !== id;
+      });
+    });
+  };
+
+  const closeHandle = ()=> {
+    setShowModal(false)
+  }
+
+  //getting new event from form and adding it in events array
+const addNewEvent = (event) =>{
+  setEvents((previousEvents)=>{
+    return [...previousEvents, event]
+  });
+}
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Title />
+      {!showEvents && (
+        <div>
+          <button onClick={() => setShowEvents(true)}>Show Events</button>
+        </div>
+      )}
+      {showEvents && (
+        <div>
+          <button onClick={() => setShowEvents(false)}>Hide Events</button>
+        </div>
+      )}
+      {showEvents && <EventList removeClickHandler={removeClickHandler} events={events}/>}
+      {showModal && (
+        <Modal closeHandle={closeHandle}>
+          <NewEventForm addNewEvent={addNewEvent} closeModal={closeHandle}/>
+        </Modal>
+      )}
+
+      {!showModal && <button onClick={()=>  setShowModal(true)  }>Add Event</button>}
     </div>
   );
 }
